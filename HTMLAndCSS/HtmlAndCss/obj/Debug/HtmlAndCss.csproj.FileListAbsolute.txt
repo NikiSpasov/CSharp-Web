@@ -1,0 +1,9 @@
+C:\GIT\C# Web\HtmlAndCss\HtmlAndCss\bin\HtmlAndCss.dll.config
+C:\GIT\C# Web\HtmlAndCss\HtmlAndCss\bin\HtmlAndCss.dll
+C:\GIT\C# Web\HtmlAndCss\HtmlAndCss\bin\HtmlAndCss.pdb
+C:\GIT\C# Web\HtmlAndCss\HtmlAndCss\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll
+C:\GIT\C# Web\HtmlAndCss\HtmlAndCss\bin\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.xml
+C:\GIT\C# Web\HtmlAndCss\HtmlAndCss\obj\Debug\HtmlAndCss.csprojResolveAssemblyReference.cache
+C:\GIT\C# Web\HtmlAndCss\HtmlAndCss\obj\Debug\HtmlAndCss.csproj.CoreCompileInputs.cache
+C:\GIT\C# Web\HtmlAndCss\HtmlAndCss\obj\Debug\HtmlAndCss.dll
+C:\GIT\C# Web\HtmlAndCss\HtmlAndCss\obj\Debug\HtmlAndCss.pdb
