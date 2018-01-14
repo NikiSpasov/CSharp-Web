@@ -1,0 +1,11 @@
+﻿[12-Jan-18 7:06:56 PM] Exploration started for <HtmlAndCss,.NETFramework,Version=v4.6.1>
+[12-Jan-18 7:06:56 PM] Exploration started for <HtmlAndCss,.NETFramework,Version=v4.6.1> using <NUnit 3x,NUnitElementsSource> on thread <25:JetPool (S) Regular thread #1>
+[12-Jan-18 7:06:56 PM] Exploration skipped for <HtmlAndCss,NUnit 3x,.NETFramework,Version=v4.6.1>: project not supported by provider
+[12-Jan-18 7:06:56 PM] Exploration started for <HtmlAndCss,.NETFramework,Version=v4.6.1> using <NUnit 2x,NUnitElementsSource> on thread <25:JetPool (S) Regular thread #1>
+[12-Jan-18 7:06:56 PM] Exploration skipped for <HtmlAndCss,NUnit 2x,.NETFramework,Version=v4.6.1>: project not supported by provider
+[12-Jan-18 7:06:56 PM] Exploration started for <HtmlAndCss,.NETFramework,Version=v4.6.1> using <xUnit.net,XunitTestElementsSource> on thread <25:JetPool (S) Regular thread #1>
+[12-Jan-18 7:06:56 PM] Exploration skipped for <HtmlAndCss,xUnit.net,.NETFramework,Version=v4.6.1>: project not supported by provider
+[12-Jan-18 7:06:56 PM] Exploration by <NUnit 3x> completed for <HtmlAndCss, .NETFramework,Version=v4.6.1>
+[12-Jan-18 7:06:56 PM] Exploration by <NUnit 2x> completed for <HtmlAndCss, .NETFramework,Version=v4.6.1>
+[12-Jan-18 7:06:56 PM] Exploration by <xUnit.net> completed for <HtmlAndCss, .NETFramework,Version=v4.6.1>
+[12-Jan-18 7:06:56 PM] Exploration completed for <HtmlAndCss,.NETFramework,Version=v4.6.1>
