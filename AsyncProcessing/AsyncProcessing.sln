@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "01.Lab_AsyncDemo", "01.Lab_AsyncDemo\01.Lab_AsyncDemo.csproj", "{C4BD9A5E-196E-40C1-838C-E589BFADA70A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "01.Lab_AsyncDemo", "01.Lab_AsyncDemo\01.Lab_AsyncDemo.csproj", "{C4BD9A5E-196E-40C1-838C-E589BFADA70A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "02.FlipPictures", "02.TurnPictures\02.FlipPictures.csproj", "{071069B7-A46E-48A2-962E-B3F05DCBC96C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "03.SumPrimesInRange", "03.SumPrimesInRange\03.SumPrimesInRange.csproj", "{4846A140-115B-479C-B4AE-96886A55C4E1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{C4BD9A5E-196E-40C1-838C-E589BFADA70A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4BD9A5E-196E-40C1-838C-E589BFADA70A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4BD9A5E-196E-40C1-838C-E589BFADA70A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{071069B7-A46E-48A2-962E-B3F05DCBC96C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{071069B7-A46E-48A2-962E-B3F05DCBC96C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{071069B7-A46E-48A2-962E-B3F05DCBC96C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{071069B7-A46E-48A2-962E-B3F05DCBC96C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4846A140-115B-479C-B4AE-96886A55C4E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4846A140-115B-479C-B4AE-96886A55C4E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4846A140-115B-479C-B4AE-96886A55C4E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4846A140-115B-479C-B4AE-96886A55C4E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
