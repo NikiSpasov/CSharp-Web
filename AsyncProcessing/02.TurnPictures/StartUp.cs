@@ -41,7 +41,20 @@
                 tasks.Add(task);
             }
 
-            Task.WaitAll(tasks.ToArray());
+            //here is how to catch all exeptions:
+
+            try
+            {
+                Task.WaitAll(tasks.ToArray());
+            }
+            catch (AggregateException ex)
+            {
+                foreach (var exeption in ex.InnerExceptions)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+            
 
             Console.WriteLine("Finished!");
 
