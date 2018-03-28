@@ -1,14 +1,19 @@
-﻿namespace _08.HandMadeHTTPServer.Server.HTTP
+﻿namespace MyCoolWebServer.Server.HTTP
 {
-    using _08.HandMadeHTTPServer.Server.HTTP.Contracts;
+    using System.Collections.Generic;
+    using System.Net;
+    using Common;
+    using Contracts;
 
     public class HttpContext : IHttpContext
     {
         private readonly IHttpRequest request;
 
-        public HttpContext(string requestStr)
+        public HttpContext(IHttpRequest request)
         {
-            this.request = new HttpRequest(requestStr);
+            CoreValidator.ThrowIfNull(request, nameof(request));
+
+            this.request = request;
         }
 
         public IHttpRequest Request => this.request;

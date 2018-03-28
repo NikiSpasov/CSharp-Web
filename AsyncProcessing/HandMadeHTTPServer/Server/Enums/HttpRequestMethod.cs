@@ -1,8 +1,8 @@
-﻿namespace _08.HandMadeHTTPServer.Server.Enums
+﻿namespace MyCoolWebServer.Server.Enums
 {
     public enum HttpRequestMethod
     {
-        POST,
-        GET
+        Get,
+        Post
     }
 }

@@ -1,8 +1,8 @@
-﻿namespace _08.HandMadeHTTPServer.Server.Enums
+﻿namespace MyCoolWebServer.Server.Enums
 {
-    public enum HttpStatusCode
+    public enum HttpStatusCode //there is a class in System.Net for this
     {
-        OK = 200,
+        Ok = 200,
        	MovedPermanently = 301,
     	Found = 302,
     	MovedTemporarily = 303,

@@ -1,11 +1,34 @@
-﻿namespace _08.HandMadeHTTPServer.Server.HTTP.Response
+﻿namespace MyCoolWebServer.Server.HTTP.Response
 {
-    using System.Net;
-    using _08.HandMadeHTTPServer.Server.HTTP.Contracts;
+    using Enums;
+    using Exeptions;
+    using Server.Contracts;
 
     public class ViewResponse : HttpResponse
     {
-        public ViewResponse(HttpStatusCode responseCode, IView view) 
-        : base(responseCode, view) { }
+        private readonly IView view;
+
+        public ViewResponse(HttpStatusCode statusCode, IView view)
+        {
+            this.ValidateStatusCode(statusCode);
+
+            this.view = view;
+            this.StatusCode = statusCode;
+        }
+
+        private void ValidateStatusCode(HttpStatusCode statusCode)
+        {
+            var statusCodeNumber = (int) statusCode;
+
+            if (statusCodeNumber > 299 && statusCodeNumber < 400)
+            {
+                throw new InvalidResponseExeption("View responses need a status code below 300 and above 400.");
+            }
+        }
+
+        public override string ToString()
+        {
+            return $"{base.ToString()}{this.view.View()} ";
+        }
     }
 }

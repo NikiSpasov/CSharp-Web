@@ -1,13 +1,15 @@
-﻿namespace _08.HandMadeHTTPServer.Server.Exeptions
+﻿namespace MyCoolWebServer.Server.Exeptions
 {
     using System;
-    public class BadRequestException : ArgumentNullException
+    public class BadRequestException : Exception
     {
-        public string Message { get; set; }
 
+        private const string InvalidRequestMessage = "Request is not valid";
+
+        public static object ThrowFromInvalidRequest() 
+            => throw new BadRequestException(InvalidRequestMessage);
+        
         public BadRequestException(string message)
-        {
-            this.Message = message;
-        }
+            :base(message) { }
     }
 }

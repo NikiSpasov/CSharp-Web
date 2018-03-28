@@ -7,9 +7,9 @@ namespace _07.TCPListener
     using System.Text;
     using System.Threading.Tasks;
 
-    class Program
+    public class Program
     {
-        static void Main(string[] args)
+        public static void Main()
         {
             int port = 1337;
             IPAddress ipAddress = IPAddress.Parse("127.0.0.1");

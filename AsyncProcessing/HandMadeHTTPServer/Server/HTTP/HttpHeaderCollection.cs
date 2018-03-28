@@ -1,46 +1,92 @@
-﻿namespace _08.HandMadeHTTPServer.Server.HTTP
+﻿namespace MyCoolWebServer.Server.HTTP
 {
     using System;
+    using System.Collections;
     using System.Collections.Generic;
-    using _08.HandMadeHTTPServer.Server.HTTP.Contracts;
+    using System.Linq;
+    using System.Text;
+    using Contracts;
+    using Common;
 
     public class HttpHeaderCollection : IHttpHeaderCollection
     {
-        private readonly Dictionary<string, HttpHeader> headers;
+        private readonly IDictionary<string, ICollection<HttpHeader>> headers;
 
         public HttpHeaderCollection()
         {
-            this.headers = new Dictionary<string, HttpHeader>();
+            this.headers = new Dictionary<string, ICollection<HttpHeader>>();
         }
 
-        public void Add(HttpHeader header) /// ????
+        public void Add(HttpHeader header)
         {
-            this.headers.Add(header.Key, header); //?????
+            CoreValidator.ThrowIfNull(header, nameof(header));
+
+            var headerKey = header.Key;
+
+            if (!this.headers.ContainsKey(headerKey))
+            {
+                this.headers[headerKey] = new List<HttpHeader>();
+            }
+
+            this.headers[headerKey].Add(header);
+        }
+
+        public void Add(string key, string value)
+        {
+            CoreValidator.ThrowIfNull(key, nameof(key));
+            CoreValidator.ThrowIfNull(value, nameof(value));
+
+
+            if (!this.headers.ContainsKey(key))
+            {
+                this.headers[key] = new List<HttpHeader>();
+            }
+
+            this.headers[key].Add(new HttpHeader(key, value));
+
         }
 
         public bool ContainsKey(string key)
         {
-            if (key != null)
-            {
-                return true;
-            }
+            CoreValidator.ThrowIfNull(key, nameof(key));
 
-            return false;
+            return this.headers.ContainsKey(key);
         }
 
-        public HttpHeader GetHeader(string key)
+        public IEnumerator<ICollection<HttpHeader>> GetEnumerator()
+            => this.headers.Values.GetEnumerator();
+
+        IEnumerator IEnumerable.GetEnumerator()
+            => this.headers.Values.GetEnumerator();
+
+        public ICollection<HttpHeader> Get(string key)
         {
-            if (this.headers.ContainsKey(key))
+            CoreValidator.ThrowIfNull(key, nameof(key));
+
+            if (!this.headers.ContainsKey(key))
             {
-                return this.headers[key];
+                throw new InvalidOperationException($"The given key {key} does not present in the headers collection");
             }
 
-            return null;
+            return this.headers[key];
         }
 
         public override string ToString()
         {
-            return string.Join("\n", this.headers);
+            var result = new StringBuilder();
+
+            foreach (var header in this.headers)
+            {
+                var headerKey = header.Key;
+
+                foreach (var headerValue in header.Value)
+                {
+                    result.AppendLine($"{headerKey}: {headerValue.Value}");
+                }
+            }
+
+            return result.ToString().Trim();
         }
+
     }
 }

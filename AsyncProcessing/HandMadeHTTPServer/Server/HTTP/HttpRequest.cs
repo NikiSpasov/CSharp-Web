@@ -1,136 +1,232 @@
-﻿namespace _08.HandMadeHTTPServer.Server.HTTP
+﻿namespace MyCoolWebServer.Server.HTTP
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using System.Net;
-    using _08.HandMadeHTTPServer.Server.Enums;
-    using _08.HandMadeHTTPServer.Server.Exeptions;
-    using _08.HandMadeHTTPServer.Server.HTTP.Contracts;
+    using System.Xml.Serialization;
+    using Enums;
+    using Exeptions;
+    using Contracts;
+    using MyCoolWebServer.Server.Common;
+    using MyCoolWebServer.Server.Http;
+    using MyCoolWebServer.Server.Http.Contracts;
 
     public class HttpRequest : IHttpRequest
     {
-        public HttpRequest(string requestString)
+        public HttpRequest(string requestText)
         {
-            this.HeaderCollection = new HttpHeaderCollection();
-            this.UrlParameters = new Dictionary<string, string>();
-            this.QueryParameters = new Dictionary<string, string>();
-            this.FormData = new Dictionary<string, string>();
+            CoreValidator.ThrowIfNullOrEmpty(requestText, nameof(requestText));
 
-            this.ParseRequest(requestString);
+            this.FormData = new Dictionary<string, string>();
+            this.QueryParameters = new Dictionary<string, string>();
+            this.UrlParameters = new Dictionary<string, string>();
+            this.Headers = new HttpHeaderCollection();
+            this.Cookies = new HttpCookieCollection();
+            
+            this.ParseRequest(requestText);
         }
 
-        public Dictionary<string, string> FormData { get; }
+        public IDictionary<string, string> FormData { get; private set; }
 
-        public HttpHeaderCollection HeaderCollection { get; }
+        public IHttpHeaderCollection Headers { get; private set; }
 
-        public string Path { get; set; }
+        public HttpCookieCollection Cookies { get; private set; }
 
-        public Dictionary<string, string> QueryParameters { get; }
+        public string Path { get; private set; }
 
-        public HttpRequestMethod? RequestMethod{ get; set; }
+        public IDictionary<string, string> QueryParameters { get; private set; }
 
-        public string Url { get; set; }
+        public HttpRequestMethod Method { get; private set; }
 
-        public Dictionary<string, string> UrlParameters { get; }
+        public string Url { get; private set; }
+
+        public IDictionary<string, string> UrlParameters { get; private set; }
+
+        public IHttpSession Session { get; set; }
 
         public void AddUrlParameter(string key, string value)
         {
-            throw new System.NotImplementedException();
+            CoreValidator.ThrowIfNullOrEmpty(key, nameof(key));
+            CoreValidator.ThrowIfNullOrEmpty(value, nameof(value));
+
+            this.UrlParameters[key] = value;
         }
 
-        private void ParseRequest(string requestString)
+        private void ParseRequest(string requestText)
         {
-            string[] requestLines = requestString
-                .Split(new[] {Environment.NewLine}, StringSplitOptions.None);
+            CoreValidator.ThrowIfNullOrEmpty(requestText, nameof(requestText));
 
-            string[] requestLine = requestLines[0].Trim()
-                .Split(new[] {" "}, StringSplitOptions.RemoveEmptyEntries);
+            var requestLines = requestText.Split(Environment.NewLine);
+
+            if (!requestLines.Any())
+            {
+                BadRequestException.ThrowFromInvalidRequest();
+            }
+
+            string[] requestLine = requestLines.First().Split(
+                new[] { " " },
+                StringSplitOptions.RemoveEmptyEntries);
 
             if (requestLine.Length != 3 || requestLine[2].ToLower() != "http/1.1")
             {
-                throw new BadRequestException("Invalid request line");
+                BadRequestException.ThrowFromInvalidRequest();
             }
 
-            this.RequestMethod = this.ParseRequestMethod(requestLine[0].ToUpper());
-            if (this.RequestMethod == null)
-            {
-                throw new BadRequestException("Invalid request line");
-            }
+            this.Method = this.ParseMethod(requestLine.First());
             this.Url = requestLine[1];
-            this.Path = this.Url
-                .Split(new[] {'?', '#'}, StringSplitOptions.RemoveEmptyEntries)[0];
+            this.Path = this.ParsePath(this.Url);
 
             this.ParseHeaders(requestLines);
+            this.ParseCookies();
+            this.SetSession();
             this.ParseParameters();
-
-            if (this.RequestMethod == HttpRequestMethod.POST)
-            {
-                this.ParseQuery(requestLines[requestLines.Length -1], this.FormData);
-            }
+            this.ParseFormData(requestLines.Last());
+           
         }
 
+        private string ParsePath(string url) =>
+            url.Split(new[] {'?', '#'}, StringSplitOptions.RemoveEmptyEntries)[0];
+        
         private void ParseParameters()
         {
-            if (!this.Url.Contains("/"))
+            if (!this.Url.Contains("?"))
             {
                 return;
             }
 
-            string query = this.Url.Split('?')[1];
-            this.ParseQuery(query, this.QueryParameters);
-        }
-
-        private void ParseQuery(string query, Dictionary<string, string> dict)
-        {
-            if (!query.Contains("="))
-            {
-                return;
-            }
-
-            string[] queryPairs = query.Split('&');
-
-            foreach (var queryPair in queryPairs)
-            {
-                string[] queryArgs = queryPair.Split('*'); //??
-                if (queryArgs.Length != 2)
-                {
-                    continue;
-                }
-
-                dict.Add(
-                    WebUtility.UrlDecode(queryArgs[0]),
-                    WebUtility.UrlDecode(queryArgs[1]));
-            }
+           this.ParseQuery(this.Url, this.UrlParameters);
         }
 
         private void ParseHeaders(string[] requestLines)
         {
             int endIndex = Array.IndexOf(requestLines, string.Empty);
+
             for (int i = 1; i < endIndex; i++)
             {
-                string[] headerArgs = requestLines[i]
-                    .Split(new[] { ": "}, StringSplitOptions.None);
+                var currentLine = requestLines[i];
+                var headerParts = currentLine.Split(new[] { ": " },
+                    StringSplitOptions.RemoveEmptyEntries);
 
-                var httpHeader = new HttpHeader(headerArgs[0], headerArgs[1]); //check for repetitions?
+                if (headerParts.Length != 2)
+                {
+                    BadRequestException.ThrowFromInvalidRequest();
+                }
 
-                this.HeaderCollection.Add(httpHeader);
+                var headerKey = headerParts[0];
+                var headerValue = headerParts[1].Trim();
+                var header = new HttpHeader(headerKey, headerValue); //check for repetitions?
+
+                this.Headers.Add(header);
             }
 
-            if (!this.HeaderCollection.ContainsKey("Host"))
+            if (!this.Headers.ContainsKey("Host"))
             {
-                throw new BadRequestException("Invalid request line");
+                BadRequestException.ThrowFromInvalidRequest();
             }
         }
 
-        private HttpRequestMethod ParseRequestMethod(string method)
+        private void ParseCookies()
         {
-            HttpRequestMethod result;
-            bool success = Enum.TryParse(method, true, out result);
-            if (success)
+            if (this.Headers.ContainsKey(HttpHeader.Cookie))
             {
-                return result;
+                var allCookies = this.Headers.Get(HttpHeader.Cookie);
+
+                foreach (var cookie in allCookies)
+                {
+                    if (!cookie.Value.Contains('='))
+                    {
+                        return;
+                    }
+                    var cookieParts = cookie
+                        .Value
+                        .Split(new[] {';'}, StringSplitOptions.RemoveEmptyEntries)
+                        .ToList();
+
+                    if (cookieParts.Any())
+                    {
+                        continue;
+                    }
+
+                    foreach (var cookiePart in cookieParts)
+                    {
+                        var cookiekeyValuePair = cookiePart
+                            .Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+
+                        if (cookiekeyValuePair.Length == 2)
+                        {
+                            var key = cookiekeyValuePair[0].Trim();
+                            var value = cookiekeyValuePair[1].Trim();
+
+                            this.Cookies.Add(new HttpCookie(key, value, false));
+                        }
+                    }
+                }
             }
-            return result;
         }
+
+        private HttpRequestMethod ParseMethod(string method)
+        {
+            HttpRequestMethod parsedMethod;
+            if (!Enum.TryParse(method, true, out parsedMethod))
+            {
+                BadRequestException.ThrowFromInvalidRequest();
+            }
+       
+            return parsedMethod;
+        }
+
+        private void ParseFormData(string formDataLine)
+        {
+            if (this.Method == HttpRequestMethod.Get)
+            {
+                return;
+            }
+
+            this.ParseQuery(formDataLine, this.QueryParameters);
+        }
+
+        private void ParseQuery(string queryString, IDictionary<string, string> dict)
+        {
+            var query = queryString
+                .Split(new[] { '?' }, StringSplitOptions.RemoveEmptyEntries)
+                .Last();
+
+            if (!query.Contains('='))
+            {
+                return;
+            }
+
+            var queryPairs = query.Split(new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
+
+            foreach (var queryPair in queryPairs)
+            {
+                var queryKvp = queryPair.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
+
+                if (queryKvp.Length != 2)
+                {
+                    return;
+                }
+
+                var queryKey = WebUtility.UrlDecode(queryKvp[0]);
+                var queryValue = WebUtility.UrlDecode(queryKvp[1]);
+
+                dict.Add(queryKey, queryValue);
+            }
+        }
+
+        public void SetSession()
+        {
+           if (this.Cookies.ContainsKey(SessionStore.SessionCookieKey))
+            {
+                var cookie = this.Cookies.Get(SessionStore.SessionCookieKey);
+                var sessionId = cookie.Value;
+
+                this.Session = SessionStore.Get(sessionId);
+            }
+        }
+
+        //public override string ToString() => this.requestText;
+
     }
 }

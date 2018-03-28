@@ -1,58 +1,44 @@
-﻿namespace _08.HandMadeHTTPServer.Server.HTTP.Response
+﻿namespace MyCoolWebServer.Server.HTTP.Response
 {
-    using System.Net;
     using System.Text;
-    using _08.HandMadeHTTPServer.Server.HTTP.Contracts;
+    using Contracts;
+    using Enums;
+    using Http.Contracts;
+    using MyCoolWebServer.Server.Http;
 
     public abstract class HttpResponse : IHttpResponse
     {
-        private readonly IView view;
 
-        protected HttpResponse(string redirectUrl)
+        protected HttpResponse()
         {
-            this.HeaderCollection = new HttpHeaderCollection();
-            this.StatusCode = HttpStatusCode.Found;
-            this.AddHeader("Location", redirectUrl);
+            this.Headers = new HttpHeaderCollection();
+            this.Cookies = new HttpCookieCollection();
         }
 
-        protected HttpResponse(HttpStatusCode responseCode, IView view)
+        public IHttpHeaderCollection Headers { get; set; }
+
+        public IHttpCookieCollection Cookies { get; set; }
+
+        public HttpStatusCode StatusCode { get; protected set; }
+
+        private string statusCodeMessage => this.StatusCode.ToString();
+
+        public override string ToString()
         {
-            this.HeaderCollection = new HttpHeaderCollection();
-            this.view = view;
-            this.StatusCode = responseCode;
+            StringBuilder response = new StringBuilder();
+
+            var statusCode = (int)this.StatusCode;
+            response.AppendLine($"HTTP/1.1 {statusCode} {this.statusCodeMessage}");
+
+            response.AppendLine(this.Headers.ToString());
+
+            return response.ToString();
         }
-
-        private HttpHeaderCollection HeaderCollection { get; set; }
-
-        private HttpStatusCode StatusCode { get; set; }
-
-        private string StatusMessage => this.StatusCode.ToString();
 
         public void AddHeader(string location, string redirectUrl)
         {
             var httpHeader = new HttpHeader(location, redirectUrl);
-            this.HeaderCollection.Add(httpHeader);
-        }
-
-        public string Response
-        {
-            get
-            {
-                StringBuilder response = new StringBuilder();
-                response.AppendLine($"HTTP/1.1 {(int) this.StatusCode} {this.StatusMessage}");
-                response.AppendLine($"Content-type: text/html"); //????
-
-                response.AppendLine();
-
-                if ((int)this.StatusCode < 300 || (int)this.StatusCode > 400)
-                {
-                    response.AppendLine("this is not redirection status!"); //????
-                }
-
-                return response.ToString();
-
-            }
-            
+            this.Headers.Add(httpHeader);
         }
     }
 }

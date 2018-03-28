@@ -1,9 +1,14 @@
-﻿namespace _08.HandMadeHTTPServer.Server.HTTP.Contracts
+﻿namespace MyCoolWebServer.Server.HTTP.Contracts
 {
+    using Enums;
+    using MyCoolWebServer.Server.Http.Contracts;
+
     public interface IHttpResponse
     {
-        string Response { get; }
+        HttpStatusCode StatusCode { get; }
 
-        void AddHeader(string location, string redirectUrl);
+        IHttpHeaderCollection Headers { get; }
+
+        IHttpCookieCollection Cookies { get; }
     }
 }

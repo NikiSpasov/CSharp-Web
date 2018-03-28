@@ -1,23 +1,29 @@
-﻿namespace _08.HandMadeHTTPServer.Server.HTTP.Contracts
+﻿namespace MyCoolWebServer.Server.HTTP.Contracts
 {
     using System.Collections.Generic;
-    using _08.HandMadeHTTPServer.Server.Enums;
+    using Enums;
+    using Http;
+    using Http.Contracts;
 
     public interface IHttpRequest
     {
-        Dictionary<string, string> FormData { get; }
+        IDictionary<string, string> FormData { get;  }
 
-        HttpHeaderCollection HeaderCollection { get; }
+        IHttpHeaderCollection Headers { get; }
 
         string Path { get; }
 
-        Dictionary<string, string> QueryParameters { get; }
+        IDictionary<string, string> QueryParameters { get; }
 
-        HttpRequestMethod? RequestMethod { get; }
+        HttpRequestMethod Method { get; }
 
         string Url { get; }
 
-        Dictionary<string, string> UrlParameters { get; }
+        HttpCookieCollection Cookies { get; }
+
+        IDictionary<string, string> UrlParameters { get; }
+
+        IHttpSession Session { get; set; }
 
         void AddUrlParameter(string key, string value);
     }
